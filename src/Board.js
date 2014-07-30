@@ -152,7 +152,7 @@
     hasAnyMajorDiagonalConflicts: function() {
       var numRows = this.get('n');
       var totalConflicts = 0;
-      for (var i = -numRows + 1; i <= numRows -1; i ++) {
+      for (var i = -numRows + 2; i <= numRows - 2; i ++) {
         totalConflicts += this.hasMajorDiagonalConflictAt(i);
       }
       return totalConflicts >= 1;
