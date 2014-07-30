@@ -130,12 +130,32 @@
     //
     // test if a specific major diagonal on this board contains a conflict
     hasMajorDiagonalConflictAt: function(majorDiagonalColumnIndexAtFirstRow) {
-      return false; // fixme
+      var total = 0;
+      var numRows = this.get('n');
+      var rowIndex = 0;
+      var colIndex = majorDiagonalColumnIndexAtFirstRow;
+
+      while (colIndex < 0) {
+        rowIndex++;
+        colIndex++;
+      }
+      while (rowIndex < numRows && colIndex < numRows) {
+        total += this.get(rowIndex)[colIndex];
+        rowIndex++;
+        colIndex++;
+      }
+
+      return total >= 2;
     },
 
     // test if any major diagonals on this board contain conflicts
     hasAnyMajorDiagonalConflicts: function() {
-      return false; // fixme
+      var numRows = this.get('n');
+      var totalConflicts = 0;
+      for (var i = -numRows + 1; i <= numRows -1; i ++) {
+        totalConflicts += this.hasMajorDiagonalConflictAt(i);
+      }
+      return totalConflicts >= 1;
     },
 
 
