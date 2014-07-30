@@ -165,12 +165,37 @@
     //
     // test if a specific minor diagonal on this board contains a conflict
     hasMinorDiagonalConflictAt: function(minorDiagonalColumnIndexAtFirstRow) {
-      return false; // fixme
+      var total = 0;
+      var rowIndex = 0;
+      var colIndex = minorDiagonalColumnIndexAtFirstRow;
+      var numRows = this.get('n');
+
+      // while our colIndex is too big
+      while (colIndex >= numRows) {
+        // take away from colIndex
+        colIndex--;
+        // add to rowIndex
+        rowIndex++;
+      }
+      // while rowIndex < numRows and colIndex >= 0
+      while (rowIndex < numRows && colIndex >= 0) {
+        // add this square to the total;
+        total += this.get(rowIndex)[colIndex];
+        colIndex--;
+        rowIndex++;
+      }
+
+      return total >= 2;
     },
 
     // test if any minor diagonals on this board contain conflicts
     hasAnyMinorDiagonalConflicts: function() {
-      return false; // fixme
+      var numRows = this.get('n');
+      var totalConflicts = 0;
+      for (var i = 1; i <= numRows * 2 -3; i++) {
+        totalConflicts += this.hasMinorDiagonalConflictAt(i);
+      }
+      return totalConflicts >= 1;
     }
 
     /*--------------------  End of Helper Functions  ---------------------*/
