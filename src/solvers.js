@@ -92,11 +92,6 @@ window.findNQueensSolution = function(n) {
           currentRow[j] = 1;
           numQueens++;
           // change the conflicts to -1!
-          // iterate through the rest of the row
-          // for each position, set to -1
-          for (var rowLoop = j + 1 ; rowLoop < numRows; rowLoop++) {
-            currentRow[rowLoop] = 'row' + i + '' + j;
-          }
           // change all array[i] to -1
           for (var colLoop = i + 1; colLoop < numRows; colLoop++) {
             // for each position, set to -1
@@ -119,6 +114,8 @@ window.findNQueensSolution = function(n) {
             }
             rowLoop++;
           }
+          // stop going through the rest of the row.
+          break;
         }
       }
     }
@@ -196,14 +193,8 @@ window.countNQueensSolutions = function(n) {
           currentRow[j] = 1;
           numQueens++;
           // change the conflicts to -1!
-          // iterate through the rest of the row
-          // for each position, set to -1
-          for (var rowLoop = j + 1 ; rowLoop < numRows; rowLoop++) {
-            currentRow[rowLoop] = 'row' + i + '' + j;
-          }
           // change all array[i] to -1
           for (var colLoop = i + 1; colLoop < numRows; colLoop++) {
-            
             // for each position, set to -1
             board[colLoop][j] = 'col' + i + '' + j;
           }
@@ -224,6 +215,8 @@ window.countNQueensSolutions = function(n) {
             }
             rowLoop++;
           }
+          // stop going through the rest of the row.
+          break;
         }
       }
     }
