@@ -67,59 +67,55 @@ window.findNQueensSolution = function(n) {
   var recursion = function (board, row, col, numQueens) {
     // iterate through each row, starting at 'ROW'
     for (var i = row; i < numRows; i++) {
-
       var currentRow = board[i];
 
-      // iterate through each column, starting at 'COL' only on first run through.
+      // iterate through each column, starting at 'COL' (only on first run)
       var j = 0;
       if(i === row) {
         j = col;
       }
+
       for (; j < numRows; j++) {
-        // if the current square is a zero, then check for diagonal conflicts!
-        if (currentRow[j] === 0) {
-          // clone it and let the clone do its thing
+        var currentPos = currentRow[j];
+        // if the current square is a zero, then it has no conflicts!
+        if (currentPos === 0) {
+          // clone the board and find out what happens if we continue with currentPos = 0
           var cloneMatrix = [];
           for (var k = 0; k < numRows; k++) {
             cloneMatrix.push(board[k].slice());
           }
           var potential = recursion(cloneMatrix, i, j + 1, numQueens);
+          // if we actually got a result from potential, return it!
           if (potential) {
             return potential;
           }
-          // board = board.slice();
-          // change the current square to 1!
-          currentRow[j] = 1;
+          // let's find out what happens if we continue with currentPos = 1
+          currentPos = 1;
           numQueens++;
-          // change the conflicts to -1!
-          // change all array[i] to -1
-          for (var colLoop = i + 1; colLoop < numRows; colLoop++) {
-            // for each position, set to -1
-            board[colLoop][j] = 'col' + i + '' + j;
-          }
 
-          var rowLoop = i + 1;
           var majorIndex = j;
           var minorIndex = j;
-          while (rowLoop < numRows) {
-            majorIndex++;
-            minorIndex--;
-            if(majorIndex < numRows) {
-              // change to -1
-              board[rowLoop][majorIndex] = 'major' + i + '' + j;
+          for (var rowLoop = i + 1; rowLoop < numRows; rowLoop++) {
+            // mark column conflicts
+            board[rowLoop][j] = 'c';
+            // mark major diagonal conflicts
+            if(majorIndex < numRows - 1) {
+              majorIndex++;
+              board[rowLoop][majorIndex] = 'M';
             }
-            if(minorIndex >= 0) {
-              // change to -1
-              board[rowLoop][minorIndex] = 'minor' + i + '' + j;
+            // mark minor diagonal conflicts
+            if(minorIndex > 0) {
+              minorIndex--;
+              board[rowLoop][minorIndex] = 'm';
             }
-            rowLoop++;
           }
-          // stop going through the rest of the row.
+          // stop going through the rest of the row because we already placed a queen here!
           break;
         }
       }
     }
     // after going through entire board, check if this board is a solution
+    // if yes, make it look pretty with 1s and 0s
     if(numQueens === numRows) {
       for(var i = 0; i < numRows; i++) {
         for(var j = 0; j < numRows; j++) {
@@ -134,9 +130,10 @@ window.findNQueensSolution = function(n) {
     }
   };
 
-  // start recursion at our initial board. win at life.
+  // start recursion at our initial empty board. win at life.
   var result = recursion(masterBoard, 0, 0, 0);
 
+  // if there was no solution, return an empty board
   if(result === null) {
     result = [];
     for(var i = 0; i < n; i++) {
@@ -192,28 +189,22 @@ window.countNQueensSolutions = function(n) {
           // change the current square to 1!
           currentRow[j] = 1;
           numQueens++;
-          // change the conflicts to -1!
-          // change all array[i] to -1
-          for (var colLoop = i + 1; colLoop < numRows; colLoop++) {
-            // for each position, set to -1
-            board[colLoop][j] = 'col' + i + '' + j;
-          }
-
-          var rowLoop = i + 1;
+          
           var majorIndex = j;
           var minorIndex = j;
-          while (rowLoop < numRows) {
-            majorIndex++;
-            minorIndex--;
-            if(majorIndex < numRows) {
-              // change to -1
-              board[rowLoop][majorIndex] = 'major' + i + '' + j;
+          for (var rowLoop = i + 1; rowLoop < numRows; rowLoop++) {
+            // mark column conflicts
+            board[rowLoop][j] = 'c';
+            // mark major diagonal conflicts
+            if(majorIndex < numRows - 1) {
+              majorIndex++;
+              board[rowLoop][majorIndex] = 'M';
             }
-            if(minorIndex >= 0) {
-              // change to -1
-              board[rowLoop][minorIndex] = 'minor' + i + '' + j;
+            // mark minor diagonal conflicts
+            if(minorIndex > 0) {
+              minorIndex--;
+              board[rowLoop][minorIndex] = 'm';
             }
-            rowLoop++;
           }
           // stop going through the rest of the row.
           break;
