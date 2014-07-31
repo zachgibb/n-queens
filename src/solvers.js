@@ -50,24 +50,6 @@ window.countNRooksSolutions = function(n) {
   return solutionCount;
 };
 
-var count;
-
-var enoughQueens = function(board) {
-  var numRows = board.get('n');
-
-  var numQueens = 0;
-  for(var i = 0; i < numRows; i++) {
-    var currentRows = board.get(i);
-    for(var j = 0; j < numRows; j++) {
-      if(currentRows[j] === 1){
-        numQueens++;
-      }
-    }
-  }
-  return numQueens === numRows;
-};
-
-
 // return a matrix (an array of arrays) representing a single nxn chessboard, with n queens placed such that none of them can attack each other
 window.findNQueensSolution = function(n) {
   var solution = undefined; //fixme
@@ -84,10 +66,9 @@ window.countNQueensSolutions = function(n) {
   var numRows = n;
 
   // keep track of how many solutions found so far
-  count = 0;
+  var count = 0;
 
-
-  var recursion = function (board, row, col) {
+  var recursion = function (board, row, col, numQueens) {
 
     // iterate through each row, starting at 'ROW'
     for (var i = row; i < numRows; i++) {
@@ -100,88 +81,60 @@ window.countNQueensSolutions = function(n) {
         j = col;
       }
       for (; j < numRows; j++) {
-
-        
-
         // if the current square is a zero, then check for diagonal conflicts!
         if (currentRow[j] === 0) {
-          currentRow[j] = 1;
-          var majorMagicNumber = j - i;
-          var minorMagicNumber = j + i;
-          // if not viable......
-          if (board.hasMajorDiagonalConflictAt(majorMagicNumber) || board.hasMinorDiagonalConflictAt(minorMagicNumber)) {
-            // leave it alone, keep it 0, and move on!
-            currentRow[j] = 0;
+          // clone it and let the clone do its thing
+          var cloneMatrix = [];
+          for (var k = 0; k < numRows; k++) {
+            var cloneRow = board.get(k).slice();
+            cloneMatrix.push(cloneRow);
           }
-          // if viable.......
-          else {
-            // clone it and let the clone do its thing
-            currentRow[j] = 0;
-            var cloneMatrix = [];
-            for (var k = 0; k < numRows; k++) {
-              var cloneRow = board.get(k).slice();
-              cloneMatrix.push(cloneRow);
-            }
-            cloneMatrix = new Board(cloneMatrix);
-            recursion(cloneMatrix, i, j+1);
+          cloneMatrix = new Board(cloneMatrix);
+          recursion(cloneMatrix, i, j+1, numQueens);
+          
+          // change the current square to 1!
+          currentRow[j] = 1;
+          numQueens++;
+          // change the conflicts to -1!
+          // iterate through the rest of the row
+          // for each position, set to -1
+          for (var rowLoop = j + 1 ; rowLoop < numRows; rowLoop++) {
+            currentRow[rowLoop] = -1;
+          }
+          // change all array[i] to -1
+          for (var colLoop = i + 1; colLoop < numRows; colLoop++) {
             
-            // change the current square to 1!
-            currentRow[j] = 1;
-            // change the conflicts to -1!
-              // iterate through the rest of the row
-                // for each position, set to -1
-            for (var rowLoop = j + 1 ; rowLoop < numRows; rowLoop++) {
-              currentRow[rowLoop] = -1;
+            // for each position, set to -1
+            board.get(colLoop)[j] = -1;
+          }
+
+          var rowLoop = i + 1;
+          var majorIndex = j;
+          var minorIndex = j;
+          while (rowLoop < numRows) {
+            majorIndex++;
+            minorIndex--;
+            if(majorIndex < numRows) {
+              // change to -1
+              board.get(rowLoop)[majorIndex] = -1;
             }
-            for (var colLoop = i + 1; colLoop < numRows; colLoop++) {
-              // change all array[i] to -1
-                // for each position, set to -1
-              board.get(colLoop)[j] = -1;
+            if(minorIndex >= 0) {
+              // change to -1
+              board.get(rowLoop)[minorIndex] = -1;
             }
-            
+            rowLoop++;
           }
         }
-
-        // continue
-
-
-
-
-
-
-
-        // // clone current board
-        // var cloneMatrix = [];
-        // for (var k = 0; k < numRows; k++) {
-        //   var cloneRow = board.get(k).slice();
-        //   cloneMatrix.push(cloneRow);
-        // }
-        // cloneMatrix = new Board(cloneMatrix);
-
-        // // check if the current square is a viable position
-        // currentRow[j] = 1;
-        // var majorMagicNumber = j - i;
-        // var minorMagicNumber = j + i;
-        // // if not, revert back to original
-        // if (board.hasRowConflictAt(i) || board.hasColConflictAt(j)
-        //       || board.hasMajorDiagonalConflictAt(majorMagicNumber)
-        //       || board.hasMinorDiagonalConflictAt(minorMagicNumber)) {
-        //   currentRow[j] = 0;
-        // }
-        // // if it is viable, create a new branch!
-        // else {
-        //   recursion(cloneMatrix, i, j+1);
-        // }
       }
     }
     // after going through entire board, check if this board is a solution
-    if(enoughQueens(board)) {
+    if(numQueens === numRows) {
       count++;
     }
   };
 
   // start recursion at our initial board. win at life.
-  recursion(masterBoard, 0, 0);
+  recursion(masterBoard, 0, 0, 0);
   console.log('Number of solutions for ' + n + ' queens:', count);
   return count;
 };
