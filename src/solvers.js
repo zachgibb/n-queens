@@ -62,18 +62,23 @@ window.findNQueensSolution = function(n) {
 // return the number of nxn chessboards that exist, with n queens placed such that none of them can attack each other
 window.countNQueensSolutions = function(n) {
   // create an empty board of n squares
-  var masterBoard = new Board({n: n});
+  var masterBoard = [];
+  for(var i = 0; i < n; i++) {
+    masterBoard[i] = [];
+    for(var j = 0; j < n; j++) {
+      masterBoard[i][j] = 0;
+    }
+  }
   var numRows = n;
 
   // keep track of how many solutions found so far
   var count = 0;
 
   var recursion = function (board, row, col, numQueens) {
-
     // iterate through each row, starting at 'ROW'
     for (var i = row; i < numRows; i++) {
 
-      var currentRow = board.get(i);
+      var currentRow = board[i];
 
       // iterate through each column, starting at 'COL' only on first run through.
       var j = 0;
@@ -86,12 +91,10 @@ window.countNQueensSolutions = function(n) {
           // clone it and let the clone do its thing
           var cloneMatrix = [];
           for (var k = 0; k < numRows; k++) {
-            var cloneRow = board.get(k).slice();
-            cloneMatrix.push(cloneRow);
+            cloneMatrix.push(board[k].slice());
           }
-          cloneMatrix = new Board(cloneMatrix);
-          recursion(cloneMatrix, i, j+1, numQueens);
-          
+          recursion(cloneMatrix, i, j + 1, numQueens);
+          // board = board.slice();
           // change the current square to 1!
           currentRow[j] = 1;
           numQueens++;
@@ -99,13 +102,13 @@ window.countNQueensSolutions = function(n) {
           // iterate through the rest of the row
           // for each position, set to -1
           for (var rowLoop = j + 1 ; rowLoop < numRows; rowLoop++) {
-            currentRow[rowLoop] = -1;
+            currentRow[rowLoop] = 'row' + i + '' + j;
           }
           // change all array[i] to -1
           for (var colLoop = i + 1; colLoop < numRows; colLoop++) {
             
             // for each position, set to -1
-            board.get(colLoop)[j] = -1;
+            board[colLoop][j] = 'col' + i + '' + j;
           }
 
           var rowLoop = i + 1;
@@ -116,11 +119,11 @@ window.countNQueensSolutions = function(n) {
             minorIndex--;
             if(majorIndex < numRows) {
               // change to -1
-              board.get(rowLoop)[majorIndex] = -1;
+              board[rowLoop][majorIndex] = 'major' + i + '' + j;
             }
             if(minorIndex >= 0) {
               // change to -1
-              board.get(rowLoop)[minorIndex] = -1;
+              board[rowLoop][minorIndex] = 'minor' + i + '' + j;
             }
             rowLoop++;
           }
