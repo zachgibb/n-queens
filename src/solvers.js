@@ -42,7 +42,7 @@ window.countNRooksSolutions = function(n) {
     } else {
       return num * factorial(num-1);
     }
-  }
+  };
 
   solutionCount = factorial(n);
 
@@ -50,10 +50,11 @@ window.countNRooksSolutions = function(n) {
   return solutionCount;
 };
 
-
+var count;
 
 var enoughQueens = function(board) {
   var numRows = board.get('n');
+
   var numQueens = 0;
   for(var i = 0; i < numRows; i++) {
     var currentRows = board.get(i);
@@ -83,7 +84,7 @@ window.countNQueensSolutions = function(n) {
   var numRows = n;
 
   // keep track of how many solutions found so far
-  var count = 0;
+  count = 0;
 
 
   var recursion = function (board, row, col) {
@@ -100,28 +101,77 @@ window.countNQueensSolutions = function(n) {
       }
       for (; j < numRows; j++) {
 
-        // clone current board
-        var cloneMatrix = [];
-        for (var k = 0; k < numRows; k++) {
-          var cloneRow = board.get(k).slice();
-          cloneMatrix.push(cloneRow);
-        }
-        cloneMatrix = new Board(cloneMatrix);
+        
 
-        // check if the current square is a viable position
-        currentRow[j] = 1;
-        var majorMagicNumber = j - i;
-        var minorMagicNumber = j + i;
-        // if not, revert back to original
-        if (board.hasRowConflictAt(i) || board.hasColConflictAt(j)
-              || board.hasMajorDiagonalConflictAt(majorMagicNumber)
-              || board.hasMinorDiagonalConflictAt(minorMagicNumber)) {
-          currentRow[j] = 0;
+        // if the current square is a zero, then check for diagonal conflicts!
+        if (currentRow[j] === 0) {
+          currentRow[j] = 1;
+          var majorMagicNumber = j - i;
+          var minorMagicNumber = j + i;
+          // if not viable......
+          if (board.hasMajorDiagonalConflictAt(majorMagicNumber) || board.hasMinorDiagonalConflictAt(minorMagicNumber)) {
+            // leave it alone, keep it 0, and move on!
+            currentRow[j] = 0;
+          }
+          // if viable.......
+          else {
+            // clone it and let the clone do its thing
+            currentRow[j] = 0;
+            var cloneMatrix = [];
+            for (var k = 0; k < numRows; k++) {
+              var cloneRow = board.get(k).slice();
+              cloneMatrix.push(cloneRow);
+            }
+            cloneMatrix = new Board(cloneMatrix);
+            recursion(cloneMatrix, i, j+1);
+            
+            // change the current square to 1!
+            currentRow[j] = 1;
+            // change the conflicts to -1!
+              // iterate through the rest of the row
+                // for each position, set to -1
+            for (var rowLoop = j + 1 ; rowLoop < numRows; rowLoop++) {
+              currentRow[rowLoop] = -1;
+            }
+            for (var colLoop = i + 1; colLoop < numRows; colLoop++) {
+              // change all array[i] to -1
+                // for each position, set to -1
+              board.get(colLoop)[j] = -1;
+            }
+            
+          }
         }
-        // if it is viable, create a new branch!
-        else {
-          recursion(cloneMatrix, i, j+1);
-        }
+
+        // continue
+
+
+
+
+
+
+
+        // // clone current board
+        // var cloneMatrix = [];
+        // for (var k = 0; k < numRows; k++) {
+        //   var cloneRow = board.get(k).slice();
+        //   cloneMatrix.push(cloneRow);
+        // }
+        // cloneMatrix = new Board(cloneMatrix);
+
+        // // check if the current square is a viable position
+        // currentRow[j] = 1;
+        // var majorMagicNumber = j - i;
+        // var minorMagicNumber = j + i;
+        // // if not, revert back to original
+        // if (board.hasRowConflictAt(i) || board.hasColConflictAt(j)
+        //       || board.hasMajorDiagonalConflictAt(majorMagicNumber)
+        //       || board.hasMinorDiagonalConflictAt(minorMagicNumber)) {
+        //   currentRow[j] = 0;
+        // }
+        // // if it is viable, create a new branch!
+        // else {
+        //   recursion(cloneMatrix, i, j+1);
+        // }
       }
     }
     // after going through entire board, check if this board is a solution

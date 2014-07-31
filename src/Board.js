@@ -82,7 +82,9 @@
       var total = 0;
       var row = this.get(rowIndex);
       for(var i = 0; i < row.length; i++) {
-        total += row[i];
+        if(row[i] === 1) {
+          total++;
+        }
       }
       return total >= 2;
     },
@@ -108,7 +110,9 @@
       var numRows = this.get('n');
       for (var i = 0; i < numRows; i++) {
         var current = this.get(i);
-        total += current[colIndex];
+        if(current[colIndex] === 1){
+          total++;
+        }
       }
       return total >= 2;
     },
@@ -140,7 +144,9 @@
         colIndex++;
       }
       while (rowIndex < numRows && colIndex < numRows) {
-        total += this.get(rowIndex)[colIndex];
+        if (this.get(rowIndex)[colIndex] === 1) {
+          total++;
+        }
         rowIndex++;
         colIndex++;
       }
@@ -180,7 +186,9 @@
       // while rowIndex < numRows and colIndex >= 0
       while (rowIndex < numRows && colIndex >= 0) {
         // add this square to the total;
-        total += this.get(rowIndex)[colIndex];
+        if (this.get(rowIndex)[colIndex] === 1) {
+          total++;
+        }
         colIndex--;
         rowIndex++;
       }
