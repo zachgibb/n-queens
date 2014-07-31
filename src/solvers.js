@@ -78,47 +78,59 @@ window.findNQueensSolution = function(n) {
 
 // return the number of nxn chessboards that exist, with n queens placed such that none of them can attack each other
 window.countNQueensSolutions = function(n) {
+  // create an empty board of n squares
   var masterBoard = new Board({n: n});
   var numRows = n;
-  // iterate through rows
+
+  // keep track of how many solutions found so far
   var count = 0;
-  // pull the matrix here so we dont have to keep making new boards
+
+
   var recursion = function (board, row, col) {
+
+    // iterate through each row, starting at 'ROW'
     for (var i = row; i < numRows; i++) {
+
       var currentRow = board.get(i);
-      // iterate through indices
+
+      // iterate through each column, starting at 'COL' only on first run through.
       var j = 0;
       if(i === row) {
         j = col;
       }
       for (; j < numRows; j++) {
+
         // clone current board
         var cloneMatrix = [];
         for (var k = 0; k < numRows; k++) {
           var cloneRow = board.get(k).slice();
           cloneMatrix.push(cloneRow);
         }
-        
         cloneMatrix = new Board(cloneMatrix);
-        
-        // set our current position to 1 on the clone
-        // if current square is 0
+
+        // check if the current square is a viable position
         currentRow[j] = 1;
         var majorMagicNumber = j - i;
         var minorMagicNumber = j + i;
+        // if not, revert back to original
         if (board.hasRowConflictAt(i) || board.hasColConflictAt(j)
               || board.hasMajorDiagonalConflictAt(majorMagicNumber)
               || board.hasMinorDiagonalConflictAt(minorMagicNumber)) {
           currentRow[j] = 0;
-        } else {
+        }
+        // if it is viable, create a new branch!
+        else {
           recursion(cloneMatrix, i, j+1);
         }
       }
     }
+    // after going through entire board, check if this board is a solution
     if(enoughQueens(board)) {
       count++;
     }
   };
+
+  // start recursion at our initial board. win at life.
   recursion(masterBoard, 0, 0);
   console.log('Number of solutions for ' + n + ' queens:', count);
   return count;
