@@ -52,7 +52,7 @@ window.countNRooksSolutions = function(n) {
 
 // return a matrix (an array of arrays) representing a single nxn chessboard, with n queens placed such that none of them can attack each other
 window.findNQueensSolution = function(n) {
-    // create an empty board of n squares
+  // create an empty board of n squares
   var masterBoard = [];
   for(var i = 0; i < n; i++) {
     masterBoard[i] = [];
@@ -61,8 +61,6 @@ window.findNQueensSolution = function(n) {
     }
   }
   var numRows = n;
-
-  // keep track of how many solutions found so far  var slou io= 0;
 
   var recursion = function (board, row, col, numQueens) {
     // iterate through each row, starting at 'ROW'
@@ -79,11 +77,12 @@ window.findNQueensSolution = function(n) {
         var currentPos = currentRow[j];
         // if the current square is a zero, then it has no conflicts!
         if (currentPos === 0) {
-          // clone the board and find out what happens if we continue with currentPos = 0
+          // clone the board
           var cloneMatrix = [];
           for (var k = 0; k < numRows; k++) {
             cloneMatrix.push(board[k].slice());
           }
+          // find out what happens if we continue with currentPos = 0
           var potential = recursion(cloneMatrix, i, j + 1, numQueens);
           // if we actually got a result from potential, return it!
           if (potential) {
@@ -95,6 +94,7 @@ window.findNQueensSolution = function(n) {
 
           var majorIndex = j;
           var minorIndex = j;
+          // loop through next rows and mark conflicts
           for (var rowLoop = i + 1; rowLoop < numRows; rowLoop++) {
             // mark column conflicts
             board[rowLoop][j] = 'c';
@@ -168,30 +168,33 @@ window.countNQueensSolutions = function(n) {
   var recursion = function (board, row, col, numQueens) {
     // iterate through each row, starting at 'ROW'
     for (var i = row; i < numRows; i++) {
-
       var currentRow = board[i];
 
-      // iterate through each column, starting at 'COL' only on first run through.
+      // iterate through each column, starting at 'COL' (only on first run)
       var j = 0;
       if(i === row) {
         j = col;
       }
+
       for (; j < numRows; j++) {
-        // if the current square is a zero, then check for diagonal conflicts!
-        if (currentRow[j] === 0) {
-          // clone it and let the clone do its thing
+        var currentPos = currentRow[j];
+        // if the current square is a zero, then it has no conflicts!
+        if (currentPos === 0) {
+          // clone the board
           var cloneMatrix = [];
           for (var k = 0; k < numRows; k++) {
             cloneMatrix.push(board[k].slice());
           }
+          // find out what happens if we continue with currentPos = 0
           recursion(cloneMatrix, i, j + 1, numQueens);
-          // board = board.slice();
-          // change the current square to 1!
-          currentRow[j] = 1;
+
+          // let's find out what happens if we continue with currentPos = 1
+          currentPos = 1;
           numQueens++;
-          
+
           var majorIndex = j;
           var minorIndex = j;
+          // loop through next rows and mark conflicts
           for (var rowLoop = i + 1; rowLoop < numRows; rowLoop++) {
             // mark column conflicts
             board[rowLoop][j] = 'c';
